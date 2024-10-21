@@ -1,7 +1,15 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
-import { Table, TableBody, TableCell, TableHeader, TableRow, Button, Spinn } from '@nextui-org/react';
-import moment from 'moment';
+import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+  Button,
+  Spinn,
+} from "@nextui-org/react";
+import moment from "moment";
 
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -13,16 +21,15 @@ const NextTable = ({
   isLoading = false,
   isError = false,
 }) => {
-
   const handleEdit = (item) => {
     setValues(item);
-    setModalState('Update');
+    setModalState("Update");
     onOpen();
   };
 
   const handleDelete = (item) => {
     setValues({ ...item, is_deleted: true });
-    setModalState('Delete');
+    setModalState("Delete");
     onOpen();
   };
 
@@ -31,7 +38,7 @@ const NextTable = ({
   return (
     <>
       {isLoading ? (
-        <Loading>Loading...</Loading>
+        "   Loading... "
       ) : isError ? (
         <div>Failed to load data</div>
       ) : (
@@ -40,7 +47,9 @@ const NextTable = ({
             <TableRow>
               <TableCell>#</TableCell>
               {columns.map((column) => (
-                <TableCell key={column}>{capitalize(column.replace('_', ' '))}</TableCell>
+                <TableCell key={column}>
+                  {capitalize(column.replace("_", " "))}
+                </TableCell>
               ))}
               <TableCell>Action</TableCell>
             </TableRow>
@@ -51,17 +60,37 @@ const NextTable = ({
                 <TableRow key={item.id}>
                   <TableCell>{index + 1}</TableCell>
                   {columns.map((column) => (
-                    <TableCell key={column}>{item[column] ? (column.includes('date') ? moment(item[column]).format('MMMM DD, YYYY') : item[column].toString()) : 'N/A'}</TableCell>
+                    <TableCell key={column}>
+                      {item[column]
+                        ? column.includes("date")
+                          ? moment(item[column]).format("MMMM DD, YYYY")
+                          : item[column].toString()
+                        : "N/A"}
+                    </TableCell>
                   ))}
                   <TableCell>
-                    <Button auto color="primary" onClick={() => handleEdit(item)}>Edit</Button>
-                    <Button auto color="error" onClick={() => handleDelete(item)}>Delete</Button>
+                    <Button
+                      auto
+                      color="primary"
+                      onClick={() => handleEdit(item)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      auto
+                      color="error"
+                      onClick={() => handleDelete(item)}
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length + 2}>No data available</TableCell>
+                <TableCell colSpan={columns.length + 2}>
+                  No data available
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

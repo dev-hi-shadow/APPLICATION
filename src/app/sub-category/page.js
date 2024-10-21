@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import { useState } from "react";
- import { useFormik } from "formik";
+import { useFormik } from "formik";
 import moment from "moment/moment";
 import {
   Button,
@@ -25,8 +25,13 @@ import {
   TableBody,
   TableHeader,
 } from "@nextui-org/react";
- import Link from "next/link";
-import { useCreateSubCategoryMutation, useDeleteSubCategoryMutation, useGetSubCategoriesQuery, useUpdateSubCategoryMutation } from "@/Services/API/SubCategory";
+import Link from "next/link";
+import {
+  useCreateSubCategoryMutation,
+  useDeleteSubCategoryMutation,
+  useGetSubCategoriesQuery,
+  useUpdateSubCategoryMutation,
+} from "@/Services/API/SubCategory";
 import { useGetCategoriesQuery } from "@/Services/API/Category";
 import { SubCategoryInitialState } from "@/Configurations/InitialStates";
 import { SubCategorySchema } from "@/Configurations/YupSchema";
@@ -35,26 +40,30 @@ import { useAlert } from "@/Hooks/Toastify";
 const SubCategory = () => {
   const [ModalState, setModalState] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [CreateSubCategory] = useCreateSubCategoryMutation();
-  const [UpdateSubCategory] = useUpdateSubCategoryMutation();
-  const [DeleteSubCategory] = useDeleteSubCategoryMutation();
+  // const [CreateSubCategories] = useCreateSubCategoryMutation();
+  const [UpdateSubCategories] = useUpdateSubCategoryMutation();
+  const [DeleteSubCategories] = useDeleteSubCategoryMutation();
   const { showAlert } = useAlert();
 
   const { data: GetCategory } = useGetCategoriesQuery();
   const { isSuccess, isLoading, data } = useGetSubCategoriesQuery();
- 
+
   const handleSubCategory = async (values) => {
     const toastid = showAlert(null, `Please we will ${ModalState}ing`, "info");
     try {
       let response;
       if (ModalState === "Update") {
-        response = await UpdateSubCategory(values).unwrap();
+        response = await UpdateSubCategories(values).unwrap();
       } else if (ModalState === "Create") {
         response = await CreateSubCategory(values).unwrap();
       } else if (["Delete", "Deactivated"].includes(ModalState)) {
-        response = await DeleteSubCategory(values).unwrap();
+        response = await DeleteSubCategories(values).unwrap();
       }
-      showAlert(toastid, response.message, response.success || response?.status);
+      showAlert(
+        toastid,
+        response.message,
+        response.success || response?.status
+      );
       onClose();
       resetForm();
     } catch (error) {
@@ -89,59 +98,88 @@ const SubCategory = () => {
                 <div className="d-flex justify-content-between">
                   <h6 className="card-title">Total {} Sub-Categories</h6>
                   <div className="d-flex gap-3">
-                    <Link href="/deleted-sub-categories" className="text-red-600 text-decoration-none">
+                    <Link
+                      href="/deleted-sub-categories"
+                      className="text-red-600 text-decoration-none"
+                    >
                       Deleted Sub-Categories
                     </Link>
-                    <Button onClick={() => { setModalState("Create"); onOpen(); }}>
+                    <Button
+                      onClick={() => {
+                        setModalState("Create");
+                        onOpen();
+                      }}
+                    >
                       Create Sub-Category
                     </Button>
                   </div>
                 </div>
                 <div className="table-responsive">
-                  <Table removeWrapper aria-label="Example table with dynamic content">
+                  <Table
+                    removeWrapper
+                    aria-label="Example table with dynamic content"
+                  >
                     <TableHeader>
                       <TableColumn>#</TableColumn>
                       <TableColumn>Sub Category</TableColumn>
                       <TableColumn>Created At</TableColumn>
-                       <TableColumn className="text-center">Action</TableColumn>
+                      <TableColumn className="text-center">Action</TableColumn>
                     </TableHeader>
-                    <TableBody emptyContent={isLoading ? <Spinner size="sm" label="Loading..." color="warning" /> : "No data Found"}>
-                      {isSuccess && Array.isArray(data.data.rows) && data.data.rows.map((SubCategory, index) => (
-                        <TableRow key={SubCategory.id}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{SubCategory.name}</TableCell>
-                          <TableCell>{moment(SubCategory.created_at).format("MMMM DD, YYYY")}</TableCell>
- 
-                          <TableCell className="text-center">
-                            <i
-                              onClick={() => {
-                                setModalState("Update");
-                                setValues({
-                                  ...SubCategory,
-                                  category_id: SubCategory.category.id,
-                                  category: undefined,
-                                });
-                                onOpen();
-                              }}
-                              className="fa-solid fa-pen me-3 text-warning"
-                              style={{ fontSize: "20px" }}
-                            ></i>
-                            <i
-                              onClick={() => {
-                                setModalState("Delete");
-                                setValues({
-                                  ...SubCategory,
-                                  category_id: SubCategory.category_id.id,
-                                  is_deleted: true,
-                                });
-                                onOpen();
-                              }}
-                              className="fa-solid fa-trash ms-3 text-danger"
-                              style={{ fontSize: "20px" }}
-                            ></i>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                    <TableBody
+                      emptyContent={
+                        isLoading ? (
+                          <Spinner
+                            size="sm"
+                            label="Loading..."
+                            color="warning"
+                          />
+                        ) : (
+                          "No data Found"
+                        )
+                      }
+                    >
+                      {isSuccess &&
+                        Array.isArray(data.data.rows) &&
+                        data.data.rows.map((SubCategory, index) => (
+                          <TableRow key={SubCategory.id}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{SubCategory.name}</TableCell>
+                            <TableCell>
+                              {moment(SubCategory.created_at).format(
+                                "MMMM DD, YYYY"
+                              )}
+                            </TableCell>
+
+                            <TableCell className="text-center">
+                              <i
+                                onClick={() => {
+                                  setModalState("Update");
+                                  setValues({
+                                    ...SubCategory,
+                                    category_id: SubCategory.category.id,
+                                    category: undefined,
+                                  });
+                                  onOpen();
+                                }}
+                                className="fa-solid fa-pen me-3 text-warning"
+                                style={{ fontSize: "20px" }}
+                              ></i>
+                              <i
+                                onClick={() => {
+                                  setModalState("Delete");
+                                  setValues({
+                                    ...SubCategory,
+                                    category_id: SubCategory.category_id.id,
+                                    is_deleted: true,
+                                  });
+                                  onOpen();
+                                }}
+                                className="fa-solid fa-trash ms-3 text-danger"
+                                style={{ fontSize: "20px" }}
+                              ></i>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </TableBody>
                   </Table>
                 </div>
@@ -177,7 +215,10 @@ const SubCategory = () => {
                 >
                   {Array.isArray(GetCategory.data.rows) &&
                     GetCategory.data.rows.map((item) => (
-                      <AutocompleteItem key={item.id} value={item.id?.toString()}>
+                      <AutocompleteItem
+                        key={item.id}
+                        value={item.id?.toString()}
+                      >
                         {item.name}
                       </AutocompleteItem>
                     ))}
@@ -207,7 +248,10 @@ const SubCategory = () => {
                               color="success"
                               variant="light"
                               onClick={async () => {
-                                handleSubCategory({ ...subcategory, is_deleted: false });
+                                handleSubCategory({
+                                  ...subcategory,
+                                  is_deleted: false,
+                                });
                               }}
                             >
                               Recover
@@ -221,8 +265,16 @@ const SubCategory = () => {
             )}
             {!["Deactivated"].includes(ModalState) && (
               <ModalFooter className="p-3">
-                <Button color="danger" variant="light" onPress={onClose}>Close</Button>
-                <Button color={ModalState === "Delete" ? "danger" : "primary"} type="submit" className="rounded">{ModalState}</Button>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button
+                  color={ModalState === "Delete" ? "danger" : "primary"}
+                  type="submit"
+                  className="rounded"
+                >
+                  {ModalState}
+                </Button>
               </ModalFooter>
             )}
           </form>
